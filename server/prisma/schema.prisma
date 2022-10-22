@@ -1,0 +1,70 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  Id       Int       @id @default(autoincrement())
+  Name     String
+  Email    String    @unique
+  Password String
+  Accounts Account[]
+  role     Role      @default(USER)
+}
+
+model Account {
+  Id             Int         @id @default(autoincrement())
+  iconId         Int
+  Icon           Icon        @relation(fields: [iconId], references: [Id])
+  currencyTypeId Int
+  currencyType   Currency    @relation(fields: [currencyTypeId], references: [Id])
+  Name           String
+  Balance        Decimal
+  userId         Int
+  user           User        @relation(fields: [userId], references: [Id])
+  Operations     Operation[]
+}
+
+model Icon {
+  Id        Int       @id @default(autoincrement())
+  Name      String    @unique
+  ImagePath String
+  Account   Account[]
+}
+
+model Currency {
+  Id      Int       @id @default(autoincrement())
+  Type    String    @unique
+  Account Account[]
+}
+
+model Operation {
+  Id         Int      @id @default(autoincrement())
+  Name       String
+  categoryId Int
+  category   Category @relation(fields: [categoryId], references: [Id])
+  accountId  Int
+  Account    Account  @relation(fields: [accountId], references: [Id])
+  Sum        Decimal
+  Date       DateTime
+}
+
+model Category {
+  Id        Int         @id @default(autoincrement())
+  Name      String      @unique
+  IconPath  String
+  Type      String
+  Operation Operation[]
+}
+
+enum Role {
+  USER
+  ADMIN
+}
