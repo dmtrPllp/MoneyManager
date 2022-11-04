@@ -6,6 +6,7 @@ import { IUserController } from "./interfaces/IUserCotroller";
 import { NextFunction, Request, Response } from 'express';
 import 'reflect-metadata';
 import { IConfigService } from "../config/IConfigService";
+import { UserRegisterDto } from "./dto/user-reg-dto";
 
 @injectable()
 export class UserController extends BaseController implements IUserController {
@@ -21,14 +22,14 @@ export class UserController extends BaseController implements IUserController {
                 func: this.login,
             },
             {
-                path: '/register',
+                path: '/registration',
                 method: 'post',
                 func: this.register,
             },
             {
-                path: '/auth',
+                path: '/activate/:link',
                 method: 'get',
-                func: this.check,
+                func: this.activate,
             }
         ]);
     }
@@ -36,10 +37,17 @@ export class UserController extends BaseController implements IUserController {
     async login(req: Request, res: Response, next: NextFunction): Promise<void> {
 
     };
-    async register(req: Request, res: Response, next: NextFunction): Promise<void> {
+    async register({ body }: Request<{}, {}, UserRegisterDto>, res: Response, next: NextFunction): Promise<void> {
+        try {
+            
+        } catch (e) {
+
+        }
+    };
+    async refresh(req: Request, res: Response, next: NextFunction): Promise<void> {
 
     };
-    async check(req: Request, res: Response, next: NextFunction): Promise<void> {
+    async activate(req: Request, res: Response, next: NextFunction): Promise<void> {
 
     };
 
