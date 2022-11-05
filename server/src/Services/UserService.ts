@@ -10,12 +10,14 @@ import { v4 } from 'uuid';
 import 'reflect-metadata';
 import { HttpError } from "../errors/HttpErrors";
 import { UserDto } from "../controllers/dto/UserDto";
+import { ITokenServie } from "./interfaces/ITokenService";
 
 @injectable()
 export class UserService implements IUserService {
     constructor(
         @inject(TYPES.ConfigService) private configService: IConfigService,
-        @inject(TYPES.PrismaService) private prismaService: PrismaService
+        @inject(TYPES.PrismaService) private prismaService: PrismaService,
+        @inject(TYPES.TokenService) private tokenService: ITokenServie
     ) { }
 
     async registrarion({ name, email, password }: UserRegisterDto): Promise<IUserData> {
@@ -29,13 +31,13 @@ export class UserService implements IUserService {
             const user = await this.prismaService.client.user.create({ data: { Email: email, Name: name, Password: hashpassword } });
             //mailService
             const userDto = new UserDto(user);
-            //generateTokens
+            const tokens = await this.tokenService.generateTokens({ ...UserDto });
+            await this.tokenService.saveToken(userDto.id, tokens.refreshToken)
             //save refreshtoken in db
 
             return {
-                //...tokens,
-                accesstoken: 'adasd',
-                refreshToken: 'bdas',
+                accesstoken:tokens.accessToken,
+                refreshToken:tokens.refreshToken,
                 UserData: userDto
             }
         } catch (e) {

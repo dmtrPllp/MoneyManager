@@ -9,6 +9,12 @@ import { ErrorHandler } from "./errors/ErrorHandler";
 import { IConfigService } from "./config/IConfigService";
 import { ConfigService } from "./config/ConfigService";
 import { PrismaService } from "./database/PrismaService";
+import { IUserService } from "./services/interfaces/IUserService";
+import { UserService } from "./services/UserService";
+import { IUserController } from "./controllers/interfaces/IUserCotroller";
+import { UserController } from "./controllers/UserController";
+import { ITokenServie } from "./services/interfaces/ITokenService";
+import { TokenService } from "./services/TokenService";
 
 export interface IBootstrapReturn {
 	appConteiner: Container;
@@ -20,6 +26,9 @@ export const appBindings = new ContainerModule((bind:interfaces.Bind) => {
     bind<IErrorHandler>(TYPES.ErrorHandler).to(ErrorHandler);
     bind<IConfigService>(TYPES.ConfigService).to(ConfigService).inSingletonScope();
     bind<PrismaService>(TYPES.PrismaService).to(PrismaService).inSingletonScope();
+    bind<IUserService>(TYPES.UserService).to(UserService);
+    bind<IUserController>(TYPES.UserController).to(UserController);
+    bind<ITokenServie>(TYPES.TokenService).to(TokenService);
     bind<App>(TYPES.Application).to(App);
 });
 
