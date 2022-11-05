@@ -15,6 +15,8 @@ import { IUserController } from "./controllers/interfaces/IUserCotroller";
 import { UserController } from "./controllers/UserController";
 import { ITokenServie } from "./services/interfaces/ITokenService";
 import { TokenService } from "./services/TokenService";
+import { IUserRepository } from "./database/repository/interfaces/IUserRepository";
+import { UserRepository } from "./database/repository/UserRepository";
 
 export interface IBootstrapReturn {
 	appConteiner: Container;
@@ -27,8 +29,9 @@ export const appBindings = new ContainerModule((bind:interfaces.Bind) => {
     bind<IConfigService>(TYPES.ConfigService).to(ConfigService).inSingletonScope();
     bind<PrismaService>(TYPES.PrismaService).to(PrismaService).inSingletonScope();
     bind<IUserService>(TYPES.UserService).to(UserService);
+    bind<IUserRepository>(TYPES.UserRepository).to(UserRepository).inSingletonScope();
     bind<IUserController>(TYPES.UserController).to(UserController);
-    bind<ITokenServie>(TYPES.TokenService).to(TokenService);
+    bind<ITokenServie>(TYPES.TokenService).to(TokenService).inSingletonScope();
     bind<App>(TYPES.Application).to(App);
 });
 

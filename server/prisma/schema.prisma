@@ -11,14 +11,14 @@ datasource db {
 }
 
 model User {
-  Id          Int       @id @default(autoincrement())
-  Name        String
-  Email       String    @unique
-  Password    String
-  isActivated Boolean   @default(false)
-  Accounts    Account[]
-  role        Role      @default(USER)
-  Token       Token[]
+  Id             Int       @id @default(autoincrement())
+  Name           String
+  Email          String    @unique
+  Password       String
+  isActivated    Boolean   @default(false)
+  Accounts       Account[]
+  role           Role      @default(USER)
+  Token          Token[]
 }
 
 model Token {

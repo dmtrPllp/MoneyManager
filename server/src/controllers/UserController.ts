@@ -8,6 +8,7 @@ import 'reflect-metadata';
 import { IConfigService } from "../config/IConfigService";
 import { UserRegisterDto } from "./dto/user-reg-dto";
 import { IUserService } from "../services/interfaces/IUserService";
+import { UserLoginDto } from "./dto/user-login-dto";
 
 @injectable()
 export class UserController extends BaseController implements IUserController {
@@ -36,8 +37,19 @@ export class UserController extends BaseController implements IUserController {
         ]);
     }
 
-    async login(req: Request, res: Response, next: NextFunction): Promise<void> {
-
+    async login({ body }: Request<{}, {}, UserLoginDto>, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const userData = await this.userService.login(body);
+            res.cookie(
+                'refreshToken',
+                userData.refreshToken,
+                {
+                    maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true
+                });
+            this.ok(res, { ...userData });
+        } catch (e) {
+            next(e);
+        }
     };
     async register({ body }: Request<{}, {}, UserRegisterDto>, res: Response, next: NextFunction): Promise<void> {
         try {
