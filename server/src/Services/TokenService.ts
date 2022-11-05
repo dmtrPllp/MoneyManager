@@ -14,6 +14,8 @@ export class TokenService implements ITokenServie {
 
 
     async generateTokens(payload: any): Promise<ITokens> {
+        console.log(this.configService.get('JWT_ACCESS_TOKEN'));
+        
         const accessToken = sign(payload, this.configService.get('JWT_ACCESS_TOKEN'), {
             expiresIn: '15m'
         });

@@ -21,27 +21,24 @@ export class UserService implements IUserService {
     ) { }
 
     async registrarion({ name, email, password }: UserRegisterDto): Promise<IUserData> {
-        try {
-            const candidate = await this.prismaService.client.user.findFirst({ where: { Email: email } });
-            if (!candidate) {
-                throw new HttpError(444, `Пользователь с таким ${email} уже сущетсвует!`);
-            }
-            const hashpassword = await hash(password, 3);
-            const activationLink = v4();
-            const user = await this.prismaService.client.user.create({ data: { Email: email, Name: name, Password: hashpassword } });
-            //mailService
-            const userDto = new UserDto(user);
-            const tokens = await this.tokenService.generateTokens({ ...UserDto });
-            await this.tokenService.saveToken(userDto.id, tokens.refreshToken)
-            //save refreshtoken in db
 
-            return {
-                accesstoken:tokens.accessToken,
-                refreshToken:tokens.refreshToken,
-                UserData: userDto
-            }
-        } catch (e) {
-            throw new HttpError(422, 'Such user is already exist');
+        const candidate = await this.prismaService.client.user.findFirst({ where: { Email: email } });
+        if (candidate) {
+            throw new HttpError(444, `Пользователь с таким ${email} уже сущетсвует!`);
+        }
+        const hashpassword = await hash(password, 3);
+        const activationLink = v4();
+        const user = await this.prismaService.client.user.create({ data: { Email: email, Name: name, Password: hashpassword } });
+        //mailService
+        const userDto = new UserDto(user);
+        const tokens = await this.tokenService.generateTokens({ ...UserDto });
+        await this.tokenService.saveToken(userDto.id, tokens.refreshToken)
+        //save refreshtoken in db
+
+        return {
+            accesstoken: tokens.accessToken,
+            refreshToken: tokens.refreshToken,
+            UserData: userDto
         }
     }
 }
