@@ -12,12 +12,13 @@ export class UserRepository implements IUserRepository {
 
     }
 
-    async create({ name, email, password, role }: UserEntity): Promise<User> {
+    async create({ name, email, password, role, activationLink }: UserEntity): Promise<User> {
         return await this.prismaService.client.user.create({
             data: {
                 Name: name,
                 Email: email,
                 Password: password,
+                activationLink,
                 role,
             },
         })

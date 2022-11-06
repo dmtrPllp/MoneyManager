@@ -33,8 +33,8 @@ export class UserService implements IUserService {
         }
         const hashpassword = await hash(password, 3);
         const activationLink = v4();
-        const user = await this.prismaService.client.user.create({ data: { Email: email, Name: name, Password: hashpassword } });
-        await this.mailService.sendActivationMail(email, `${this.configService.get('API_URL')}/api/activate/${activationLink}`);
+        const user = await this.prismaService.client.user.create({ data: { Email: email, Name: name, Password: hashpassword, activationLink } });
+        await this.mailService.sendActivationMail(email, `${this.configService.get('API_URL')}/users/activate/${activationLink}`);
         return await this.generateTokensForUserDto(user);
     }
 
@@ -49,13 +49,16 @@ export class UserService implements IUserService {
         return await this.generateTokensForUserDto(user);
     }
 
-    async activate(): Promise<void> {
-        const user = await this.prismaService.client.user.findFirst({where:{ activationLink }});
+    async activate(activationLink: string): Promise<void> {
+        console.log(activationLink);
+        const user = await this.prismaService.client.user.findFirst({ where: { activationLink } });
         if (!user) {
-            throw ApiError.BadRequest('Некорректная ссылка активации');
+            throw new HttpError(400, `Некорректая ссылка активации!`);
         }
-        user.isActivated = true;
-        await user.save();
+        await this.prismaService.client.user.update({
+            where: { activationLink },
+            data: { isActivated:true }
+        });
     }
 
     async generateTokensForUserDto(user: User): Promise<IUserData> {
