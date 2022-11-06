@@ -9,7 +9,6 @@ import { IConfigService } from "../config/IConfigService";
 import { UserRegisterDto } from "./dto/user-reg-dto";
 import { IUserService } from "../services/interfaces/IUserService";
 import { UserLoginDto } from "./dto/user-login-dto";
-import { getCookie} from "typescript-cookie";
 
 @injectable()
 export class UserController extends BaseController implements IUserController {
