@@ -34,6 +34,11 @@ export class UserController extends BaseController implements IUserController {
                 path: '/activate/:link',
                 method: 'get',
                 func: this.activate,
+            },
+            {
+                path: '/refresh',
+                method: 'get',
+                func: this.activate,
             }
         ]);
     }
@@ -67,7 +72,21 @@ export class UserController extends BaseController implements IUserController {
         }
     };
     async refresh(req: Request, res: Response, next: NextFunction): Promise<void> {
-
+        try {
+            const { refreshToken } = req.cookies;
+            const token = await this.userService.refresh(refreshToken);
+            if(token){
+                res.cookie(
+                    'refreshToken',
+                    token.refreshToken,
+                    {
+                        maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true
+                    });
+                    this.ok(res, { ...token });
+            }
+        } catch (e) {
+            next(e);
+        }
     };
     async activate(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {

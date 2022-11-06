@@ -50,20 +50,36 @@ export class UserService implements IUserService {
     }
 
     async activate(activationLink: string): Promise<void> {
-        console.log(activationLink);
         const user = await this.prismaService.client.user.findFirst({ where: { activationLink } });
         if (!user) {
             throw new HttpError(400, `Некорректая ссылка активации!`);
         }
         await this.prismaService.client.user.update({
             where: { activationLink },
-            data: { isActivated:true }
+            data: { isActivated: true }
         });
+    }
+
+    async refresh(refreshToken: string): Promise<IUserData | null> {
+        if (!refreshToken) {
+            throw new HttpError(401, `Пользователь не авторизован!`);
+        }
+        const userData = await this.tokenService.validateRefreshToken(refreshToken) as UserDto;
+        const tokenFromDB = await this.tokenService.findToken(refreshToken);
+        if (!tokenFromDB || !userData) {
+            throw new HttpError(401, `Пользователь не авторизован!`);
+        }
+        const user = await this.prismaService.client.user.findFirst({ where: { Id: userData.id } });
+        if (user) {
+            return await this.generateTokensForUserDto(user);
+        }
+        else return null;
     }
 
     async generateTokensForUserDto(user: User): Promise<IUserData> {
         const userDto = new UserDto(user);
-        const tokens = await this.tokenService.generateTokens({ ...UserDto });
+        console.log(userDto.email)
+        const tokens = await this.tokenService.generateTokens({ ...userDto });
         await this.tokenService.saveToken(userDto.id, tokens.refreshToken);
         return {
             accesstoken: tokens.accessToken,
