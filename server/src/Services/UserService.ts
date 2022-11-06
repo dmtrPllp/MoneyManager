@@ -78,7 +78,6 @@ export class UserService implements IUserService {
 
     async generateTokensForUserDto(user: User): Promise<IUserData> {
         const userDto = new UserDto(user);
-        console.log(userDto.email)
         const tokens = await this.tokenService.generateTokens({ ...userDto });
         await this.tokenService.saveToken(userDto.id, tokens.refreshToken);
         return {

@@ -6,8 +6,7 @@ import { TYPES } from "./types";
 import 'reflect-metadata';
 import { IErrorHandler } from "./errors/IErrorHandler";
 import { PrismaService } from "./database/PrismaService";
-import { IUserController } from "./controllers/interfaces/IUserCotroller";
-import { UserController } from "./controllers/UserController";
+import cookieParser from 'cookie-parser';
 import { BaseController } from "./common/base_controller";
 
 
@@ -29,6 +28,7 @@ export class App {
 
     useRoutes(): void {
         this.app.use(json());
+        this.app.use(cookieParser());
         this.app.use('/users', this.userController.router);
     }
 

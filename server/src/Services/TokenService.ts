@@ -15,7 +15,7 @@ export class TokenService implements ITokenServie {
 
 
 
-    async generateTokens(payload:any): Promise<ITokens> {
+    async generateTokens(payload: any): Promise<ITokens> {
         const accessToken = sign(payload, this.configService.get('JWT_ACCESS_SECRET'), {
             expiresIn: '15m'
         });
@@ -29,7 +29,7 @@ export class TokenService implements ITokenServie {
     };
     async validateAccessToken(token: string): Promise<string | JwtPayload | null> {
         try {
-            const UserData= verify(token, this.configService.get('JWT_ACCESS_TOKEN'));
+            const UserData = verify(token, this.configService.get('JWT_ACCESS_TOKEN'));
             return UserData as UserDto;
         } catch (e) {
             return null;
@@ -38,7 +38,7 @@ export class TokenService implements ITokenServie {
     async validateRefreshToken(token: string): Promise<string | JwtPayload | null> {
         try {
             const UserData = verify(token, this.configService.get('JWT_REFRESH_SECRET'));
-            return UserData as UserDto; //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            return UserData as UserDto;
         } catch (e) {
             return null;
         }
@@ -46,7 +46,10 @@ export class TokenService implements ITokenServie {
     async saveToken(userId: number, refreshToken: string): Promise<Token | null> {
         const tokenData = await this.prismaService.client.token.findFirst({ where: { userId } });
         if (tokenData) {
-            tokenData.refreshToken = refreshToken;
+            await this.prismaService.client.token.update({
+                where: { userId },
+                data: { refreshToken }
+            });
             return null;
         }
         const token = await this.prismaService.client.token.create({ data: { userId, refreshToken } });

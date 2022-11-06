@@ -14,9 +14,11 @@
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "^4.5.0",
+    "@types/cookie-parser": "^1.4.3",
     "@types/nodemailer": "^6.4.6",
     "@types/uuid": "^8.3.4",
     "bcrypt": "^5.1.0",
+    "cookie-parser": "^1.4.6",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "inversify": "^6.0.1",
@@ -26,6 +28,7 @@
     "pg-hstore": "^2.3.4",
     "reflect-metadata": "^0.1.13",
     "sequelize": "^6.25.3",
+    "typescript-cookie": "^1.0.4",
     "uuid": "^9.0.0"
   },
   "devDependencies": {

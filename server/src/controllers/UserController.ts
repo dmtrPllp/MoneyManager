@@ -9,7 +9,7 @@ import { IConfigService } from "../config/IConfigService";
 import { UserRegisterDto } from "./dto/user-reg-dto";
 import { IUserService } from "../services/interfaces/IUserService";
 import { UserLoginDto } from "./dto/user-login-dto";
-import { AuthMiddleware } from "../middleware/AuthMiddleware";
+import { getCookie} from "typescript-cookie";
 
 @injectable()
 export class UserController extends BaseController implements IUserController {
@@ -38,7 +38,7 @@ export class UserController extends BaseController implements IUserController {
             {
                 path: '/refresh',
                 method: 'get',
-                func: this.activate,
+                func: this.refresh,
             }
         ]);
     }
@@ -73,16 +73,16 @@ export class UserController extends BaseController implements IUserController {
     };
     async refresh(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const { refreshToken } = req.cookies;
-            const token = await this.userService.refresh(refreshToken);
-            if(token){
+            const refreshToken = req.cookies['refreshToken'];
+            const token = await this.userService.refresh(refreshToken!);
+            if (token) {
                 res.cookie(
                     'refreshToken',
                     token.refreshToken,
                     {
                         maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true
                     });
-                    this.ok(res, { ...token });
+                this.ok(res, { ...token });
             }
         } catch (e) {
             next(e);
