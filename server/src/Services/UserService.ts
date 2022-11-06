@@ -13,8 +13,8 @@ import { UserDto } from "../controllers/dto/UserDto";
 import { ITokenServie } from "./interfaces/ITokenService";
 import { IUserRepository } from "../database/repository/interfaces/IUserRepository";
 import { UserLoginDto } from "../controllers/dto/user-login-dto";
-import e from "express";
 import { User } from "@prisma/client";
+import { IMailService } from "./interfaces/IMailService";
 
 @injectable()
 export class UserService implements IUserService {
@@ -22,11 +22,11 @@ export class UserService implements IUserService {
         @inject(TYPES.ConfigService) private configService: IConfigService,
         @inject(TYPES.PrismaService) private prismaService: PrismaService,
         @inject(TYPES.TokenService) private tokenService: ITokenServie,
-        @inject(TYPES.UserRepository) private userRepository: IUserRepository
+        @inject(TYPES.UserRepository) private userRepository: IUserRepository,
+        @inject(TYPES.MailService) private mailService: IMailService
     ) { }
 
     async registrarion({ name, email, password }: UserRegisterDto): Promise<IUserData> {
-
         const candidate = await this.prismaService.client.user.findFirst({ where: { Email: email } });
         if (candidate) {
             throw new HttpError(400, `Пользователь с почтой ${email} уже сущетсвует!`);
@@ -34,7 +34,7 @@ export class UserService implements IUserService {
         const hashpassword = await hash(password, 3);
         const activationLink = v4();
         const user = await this.prismaService.client.user.create({ data: { Email: email, Name: name, Password: hashpassword } });
-        //mailService
+        await this.mailService.sendActivationMail(email, `${this.configService.get('API_URL')}/api/activate/${activationLink}`);
         return await this.generateTokensForUserDto(user);
     }
 
@@ -47,6 +47,15 @@ export class UserService implements IUserService {
             throw new HttpError(400, `Неверный пароль!`);
         }
         return await this.generateTokensForUserDto(user);
+    }
+
+    async activate(): Promise<void> {
+        const user = await this.prismaService.client.user.findFirst({where:{ activationLink }});
+        if (!user) {
+            throw ApiError.BadRequest('Некорректная ссылка активации');
+        }
+        user.isActivated = true;
+        await user.save();
     }
 
     async generateTokensForUserDto(user: User): Promise<IUserData> {

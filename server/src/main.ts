@@ -17,6 +17,8 @@ import { ITokenServie } from "./services/interfaces/ITokenService";
 import { TokenService } from "./services/TokenService";
 import { IUserRepository } from "./database/repository/interfaces/IUserRepository";
 import { UserRepository } from "./database/repository/UserRepository";
+import { IMailService } from "./services/interfaces/IMailService";
+import { MailService } from "./services/MailService";
 
 export interface IBootstrapReturn {
 	appConteiner: Container;
@@ -32,6 +34,7 @@ export const appBindings = new ContainerModule((bind:interfaces.Bind) => {
     bind<IUserRepository>(TYPES.UserRepository).to(UserRepository).inSingletonScope();
     bind<IUserController>(TYPES.UserController).to(UserController);
     bind<ITokenServie>(TYPES.TokenService).to(TokenService).inSingletonScope();
+    bind<IMailService>(TYPES.MailService).to(MailService).inSingletonScope();
     bind<App>(TYPES.Application).to(App);
 });
 

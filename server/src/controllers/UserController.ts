@@ -69,7 +69,13 @@ export class UserController extends BaseController implements IUserController {
 
     };
     async activate(req: Request, res: Response, next: NextFunction): Promise<void> {
-
+        try {
+            const activationLink = req.params.link;
+            await this.userService.activate(activationLink);
+            return res.redirect(this.configService.get('CLIENT_URL'));
+        } catch (e) {
+            next(e);
+        }
     };
 
 }

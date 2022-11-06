@@ -5,6 +5,7 @@ import { TYPES } from "../types";
 import { IConfigService } from "../config/IConfigService";
 import { PrismaService } from "../database/PrismaService";
 import { Token } from "@prisma/client";
+import 'reflect-metadata';
 
 @injectable()
 export class TokenService implements ITokenServie {

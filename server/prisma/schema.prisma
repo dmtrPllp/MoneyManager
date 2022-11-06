@@ -19,6 +19,7 @@ model User {
   Accounts       Account[]
   role           Role      @default(USER)
   Token          Token[]
+  activationLink String    @unique
 }
 
 model Token {
