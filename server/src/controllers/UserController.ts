@@ -9,6 +9,7 @@ import { IConfigService } from "../config/IConfigService";
 import { UserRegisterDto } from "./dto/user-reg-dto";
 import { IUserService } from "../services/interfaces/IUserService";
 import { UserLoginDto } from "./dto/user-login-dto";
+import { ValidateMiddleware } from "../middleware/ValidateMiddleware";
 
 @injectable()
 export class UserController extends BaseController implements IUserController {
@@ -23,11 +24,13 @@ export class UserController extends BaseController implements IUserController {
                 path: '/login',
                 method: 'post',
                 func: this.login,
+                middlewares: [new ValidateMiddleware(UserLoginDto)]
             },
             {
                 path: '/registration',
                 method: 'post',
                 func: this.register,
+                middlewares: [new ValidateMiddleware(UserRegisterDto)]
             },
             {
                 path: '/activate/:link',
