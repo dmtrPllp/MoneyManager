@@ -20,7 +20,8 @@ export class App {
         @inject(TYPES.LoggerService) private loggerService: ILogger,
         @inject(TYPES.ErrorHandler) private errorHandler: IErrorHandler,
         @inject(TYPES.PrismaService) private prismaService: PrismaService,
-        @inject(TYPES.UserController) private userController: BaseController
+        @inject(TYPES.UserController) private userController: BaseController,
+        @inject(TYPES.AccountController) private accountController: BaseController,
     ) {
         this.app = express();
         this.port = 5000;
@@ -30,6 +31,7 @@ export class App {
         this.app.use(json());
         this.app.use(cookieParser());
         this.app.use('/users', this.userController.router);
+        this.app.use('/accounts', this.accountController.router);
     }
 
 

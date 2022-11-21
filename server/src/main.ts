@@ -19,6 +19,8 @@ import { IUserRepository } from "./database/repository/interfaces/IUserRepositor
 import { UserRepository } from "./database/repository/UserRepository";
 import { IMailService } from "./services/interfaces/IMailService";
 import { MailService } from "./services/MailService";
+import { IAccountController } from "./controllers/interfaces/IAccountController";
+import { AccountController } from "./controllers/AccountController";
 
 export interface IBootstrapReturn {
 	appConteiner: Container;
@@ -35,6 +37,7 @@ export const appBindings = new ContainerModule((bind:interfaces.Bind) => {
     bind<IUserController>(TYPES.UserController).to(UserController);
     bind<ITokenServie>(TYPES.TokenService).to(TokenService).inSingletonScope();
     bind<IMailService>(TYPES.MailService).to(MailService).inSingletonScope();
+    bind<IAccountController>(TYPES.AccountController).to(AccountController);
     bind<App>(TYPES.Application).to(App);
 });
 
