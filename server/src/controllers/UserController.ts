@@ -10,6 +10,7 @@ import { UserRegisterDto } from "./dto/user-reg-dto";
 import { IUserService } from "../services/interfaces/IUserService";
 import { UserLoginDto } from "./dto/user-login-dto";
 import { ValidateMiddleware } from "../middleware/ValidateMiddleware";
+import { UpdateUserDto } from "./dto/update-user.tso";
 
 @injectable()
 export class UserController extends BaseController implements IUserController {
@@ -41,6 +42,11 @@ export class UserController extends BaseController implements IUserController {
                 path: '/refresh',
                 method: 'get',
                 func: this.refresh,
+            },
+            {
+                path: '/update/:id',
+                method: 'patch',
+                func: this.update,
             }
         ]);
     }
@@ -61,6 +67,7 @@ export class UserController extends BaseController implements IUserController {
     };
     async register({ body }: Request<{}, {}, UserRegisterDto>, res: Response, next: NextFunction): Promise<void> {
         try {
+            console.log(A.b);
             const userData = await this.userService.registrarion(body);
             res.cookie(
                 'refreshToken',
@@ -100,4 +107,21 @@ export class UserController extends BaseController implements IUserController {
         }
     };
 
+    async update(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const id = req.params.id;
+            const updateDto: UpdateUserDto = req.body;
+            await this.userService.update(+id, updateDto);
+            return res.redirect(this.configService.get('CLIENT_URL'));
+        } catch (e) {
+            next(e);
+        }
+    };
+
+}
+
+enum A {
+    a,
+    b,
+    c
 }

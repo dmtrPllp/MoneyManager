@@ -10,4 +10,5 @@ export const TYPES = {
     UserController: Symbol.for('UserController'),
     UserRepository: Symbol.for('UserRepository'),
     AccountController: Symbol.for('AccountController'),
+    AccountService: Symbol.for('AccountService'),
 }

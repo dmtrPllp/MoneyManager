@@ -32,7 +32,7 @@ export class MailService implements IMailService {
                 `
                        <div>
                        <h1>Для активации перейдите по ссылке</h1>
-                       <a href="${link}">${link}</a>
+                       <a href="${link}">TAP</a>
                        </div>
                   `
         });

@@ -11,15 +11,24 @@ datasource db {
 }
 
 model User {
-  Id             Int       @id @default(autoincrement())
-  Name           String
-  Email          String    @unique
-  Password       String
-  isActivated    Boolean   @default(false)
-  Accounts       Account[]
-  role           Role      @default(USER)
-  Token          Token[]
-  activationLink String    @unique
+  Id                     Int                     @id @default(autoincrement())
+  Name                   String
+  Email                  String                  @unique
+  Password               String
+  Phone                  String?
+  isActivated            Boolean                 @default(false)
+  Accounts               Account[]
+  role                   Role                    @default(USER)
+  Token                  Token[]
+  activationLink         String                  @unique
+  EmailVerificationLinks EmailVerificationLinks?
+}
+
+model EmailVerificationLinks {
+  id     Int    @id @default(autoincrement())
+  email  String @unique
+  user   User   @relation(fields: [userId], references: [Id])
+  userId Int    @unique
 }
 
 model Token {
@@ -74,7 +83,81 @@ model Category {
   Operation Operation[]
 }
 
+model Product {
+  id                    Int                     @id @default(autoincrement())
+  name                  String
+  price                 Int
+  ProductAttributeGroup ProductAttributeGroup[]
+}
+
+model ProductAttributeGroup {
+  productId Int
+  product   Product        @relation(fields: [productId], references: [id])
+  groupId   Int
+  group     AttributeGroup @relation(fields: [groupId], references: [id])
+
+  @@id([productId, groupId])
+}
+
+model AttributeGroup {
+  id                      Int                       @id @default(autoincrement())
+  name                    String
+  multipleSelection       Boolean
+  ProductAttributeGroup   ProductAttributeGroup[]
+  AttributeGroupAttribute AttributeGroupAttribute[]
+}
+
+model AttributeGroupAttribute {
+  attributeId         Int
+  attribute           Attribute      @relation(fields: [attributeId], references: [id])
+  groupId             Int
+  group               AttributeGroup @relation(fields: [groupId], references: [id])
+  selected_by_default Boolean
+  min                 Int
+  max                 Int
+  price               Decimal?
+
+  @@id([attributeId, groupId])
+}
+
+model Attribute {
+  id                      Int                       @id @default(autoincrement())
+  name                    String
+  weight                  Decimal
+  available               Boolean
+  AttributeGroupAttribute AttributeGroupAttribute[]
+}
+
 enum Role {
   USER
   ADMIN
+}
+
+model AllLanguages {
+  id               Int                @id @default(autoincrement())
+  iso2             String
+  iso3             String
+  allLanguagesData AllLanguagesData[]
+
+  @@unique([id, iso2])
+  @@map("all_languages")
+}
+
+model AllLanguagesData {
+  name             String
+  language         AllLanguages @relation(fields: [languageId, targetLanguageId], references: [id, iso2])
+  languageId       Int          @map("language_id")
+  targetLanguageId String       @map("target_language_id")
+
+  @@id([languageId, targetLanguageId])
+}
+
+model A {
+  aId String @id
+  b   Int
+}
+
+model B {
+  bId String @id
+  a   Int
 }

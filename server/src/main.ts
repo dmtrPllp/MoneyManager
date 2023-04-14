@@ -21,6 +21,8 @@ import { IMailService } from "./services/interfaces/IMailService";
 import { MailService } from "./services/MailService";
 import { IAccountController } from "./controllers/interfaces/IAccountController";
 import { AccountController } from "./controllers/AccountController";
+import { IAccountService } from "./services/interfaces/IAccountService";
+import { AccountService } from "./services/AccountService";
 
 export interface IBootstrapReturn {
 	appConteiner: Container;
@@ -38,6 +40,7 @@ export const appBindings = new ContainerModule((bind:interfaces.Bind) => {
     bind<ITokenServie>(TYPES.TokenService).to(TokenService).inSingletonScope();
     bind<IMailService>(TYPES.MailService).to(MailService).inSingletonScope();
     bind<IAccountController>(TYPES.AccountController).to(AccountController);
+    bind<IAccountService>(TYPES.AccountService).to(AccountService);
     bind<App>(TYPES.Application).to(App);
 });
 

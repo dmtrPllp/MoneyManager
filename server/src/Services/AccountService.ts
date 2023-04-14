@@ -5,6 +5,7 @@ import { AccountDto } from "../controllers/dto/AccountDto";
 import { PrismaService } from "../database/PrismaService";
 import { HttpError } from "../errors/HttpErrors";
 import { TYPES } from "../types";
+import 'reflect-metadata';
 import { IAccountService } from "./interfaces/IAccountService";
 
 @injectable()

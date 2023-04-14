@@ -15,6 +15,7 @@ import { IUserRepository } from "../database/repository/interfaces/IUserReposito
 import { UserLoginDto } from "../controllers/dto/user-login-dto";
 import { User } from "@prisma/client";
 import { IMailService } from "./interfaces/IMailService";
+import { UpdateUserDto } from "../controllers/dto/update-user.tso";
 
 @injectable()
 export class UserService implements IUserService {
@@ -33,7 +34,7 @@ export class UserService implements IUserService {
         }
         const hashpassword = await hash(password, 3);
         const activationLink = v4();
-        const user = await this.prismaService.client.user.create({ data: { Email: email, Name: name, Password: hashpassword, activationLink } });
+        const user = await this.prismaService.client.user.create({ data: { Email: email, Name: name, Password: hashpassword, activationLink, Phone: '' } });
         await this.mailService.sendActivationMail(email, `${this.configService.get('API_URL')}/users/activate/${activationLink}`);
         return await this.generateTokensForUserDto(user);
     }
@@ -57,6 +58,24 @@ export class UserService implements IUserService {
         await this.prismaService.client.user.update({
             where: { activationLink },
             data: { isActivated: true }
+        });
+    }
+
+    async update(id: number, updateDto: UpdateUserDto): Promise<void> {
+        const user = await this.prismaService.client.user.findFirst({ where: { Id: id } });
+        if (!user) {
+            throw new HttpError(400, `Некорректый идентификатор пользователя!`);
+        }
+
+        await this.prismaService.client.user.update({
+            where: {
+                Id: id,
+            },
+            data: {
+                Email: updateDto.email !== user.Email ? await this.changeMail(id,updateDto.email!) : updateDto.email,
+                Name: updateDto.name,
+                Phone: updateDto.phone
+            },
         });
     }
 
@@ -85,5 +104,20 @@ export class UserService implements IUserService {
             refreshToken: tokens.refreshToken,
             UserData: userDto
         }
+    }
+
+    async changeMail(userid: number, newEmail: string): Promise<string> {
+        const activationLink = v4();
+        await this.prismaService.client.user.update({
+            where: {
+                Id: userid,
+            },
+            data: {
+                activationLink,
+                isActivated: false
+            },
+        });
+        await this.mailService.sendActivationMail(newEmail, `${this.configService.get('API_URL')}/users/activate/${activationLink}`);
+        return newEmail;
     }
 }

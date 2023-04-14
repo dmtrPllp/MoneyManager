@@ -7,6 +7,8 @@ import { ILogger } from "../logger/ILogger";
 import { IAccountController } from "./interfaces/IAccountController";
 import { Request, Response, NextFunction } from "express";
 import { AuthMiddleware } from "../middleware/AuthMiddleware";
+import { AccountDto } from "./dto/AccountDto";
+import { IAccountService } from "../services/interfaces/IAccountService";
 
 
 @injectable()
@@ -14,7 +16,8 @@ export class AccountController extends BaseController implements IAccountControl
 
 
     constructor(@inject(TYPES.LoggerService) private loggerService: ILogger,
-        @inject(TYPES.ConfigService) private configService: IConfigService,) {
+        @inject(TYPES.ConfigService) private configService: IConfigService,
+        @inject(TYPES.AccountService) private accountService: IAccountService,) {
         super(loggerService);
         this.bindRoutes([
             {
@@ -45,28 +48,28 @@ export class AccountController extends BaseController implements IAccountControl
     }
     async userAccounts(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            
         } catch (e) {
             next(e);
         }
     };
-    async createAccount(req: Request, res: Response, next: NextFunction): Promise<void> {
+    async createAccount({ body }: Request<{}, {}, AccountDto>, res: Response, next: NextFunction): Promise<void> {
         try {
-            
+            const added = await this.accountService.createAccount(body);
+            this.ok(res, { ...added });
         } catch (e) {
             next(e);
         }
     };
     async editAccount(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            
+
         } catch (e) {
             next(e);
         }
     };
     async deleteAccount(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            
+
         } catch (e) {
             next(e);
         }
